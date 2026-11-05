@@ -114,11 +114,11 @@ export function Login({ initialEmail }: { initialEmail?: string | undefined }) {
   const [pw, setPw] = useState("");
   const [err, setErr] = useState<{ email?: string | undefined; form?: string | undefined }>({});
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !pw) return setErr({ form: "Surel atau kata sandi salah" });
     if (!EMAIL_RE.test(email)) return setErr({ email: "Format surel tidak valid (contoh: nama@email.com)" });
-    const error = login(email, pw, role);
+    const error = await login(email, pw, role);
     if (error) return setErr({ form: error });
     setErr({});
     toast.success("Berhasil masuk");

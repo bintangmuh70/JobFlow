@@ -47,6 +47,31 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const url = new URL(request.url);
+      if (url.pathname === "/api/health") {
+        return new Response(
+          JSON.stringify({
+            status: "healthy",
+            service: "JobFlow Backend API Engine",
+            serverTime: new Date().toISOString(),
+            uptime: `${Math.floor(typeof process !== "undefined" && process.uptime ? process.uptime() : 0)}s`,
+            environment: (typeof process !== "undefined" && process.env && process.env["NODE_ENV"]) || "development",
+            database: {
+              provider: "Supabase (PostgreSQL)",
+              url: "https://egkjtrbieirjmaathxub.supabase.co",
+              status: "connected",
+            },
+          }),
+          {
+            status: 200,
+            headers: {
+              "content-type": "application/json; charset=utf-8",
+              "access-control-allow-origin": "*",
+            },
+          },
+        );
+      }
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);

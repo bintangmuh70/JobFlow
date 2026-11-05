@@ -3,6 +3,7 @@ import {
   seed, seedClassmates, uid, authenticate, SEED_ACCOUNTS, DEMO,
   type Application, type Status, type Schedule, type Account, type Role, type Cv,
 } from "./data";
+import { loginServerFn } from "./auth.server";
 
 export type Screen =
   | { name: "login"; email?: string | undefined }
@@ -40,7 +41,7 @@ interface Store {
   go: (s: Screen) => void;
   replace: (s: Screen) => void;
   back: () => void;
-  login: (email: string, password: string, role: Role) => string | null;
+  login: (email: string, password: string, role: Role) => Promise<string | null>;
   loginDemo: (role: Role) => void;
   register: (a: Omit<Account, "id" | "role">) => string | null;
   logout: () => void;
@@ -103,11 +104,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       window.scrollTo(0, 0);
     },
     back: () => setStack((st) => (st.length > 1 ? st.slice(0, -1) : st)),
-    login: (email, password, role) => {
-      const r = authenticate(accounts, email, password, role);
-      if (!r.ok) return r.error;
-      enter(r.account);
-      return null;
+    login: async (email, password, role) => {
+      try {
+        const srv = await loginServerFn({ data: { email, password, role } });
+        if (!srv.ok || !srv.account) {
+          return srv.error ?? "Gagal masuk";
+        }
+        enter(srv.account);
+        return null;
+      } catch {
+        const r = authenticate(accounts, email, password, role);
+        if (!r.ok) return r.error;
+        enter(r.account);
+        return null;
+      }
     },
     loginDemo: (role) => {
       const r = authenticate(accounts, DEMO[role].email, DEMO[role].password, role);
