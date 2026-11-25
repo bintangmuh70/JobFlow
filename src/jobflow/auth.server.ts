@@ -1,52 +1,21 @@
 import { createServerFn } from "@tanstack/react-start";
-import { SEED_ACCOUNTS, type Role, type Account } from "./data";
+import { SUPABASE_URL } from "@/lib/supabase";
 
-export interface ServerLoginPayload {
-  email: string;
-  password: string;
-  role: Role;
-}
-
-export interface ServerLoginResult {
-  ok: boolean;
-  error?: string;
-  account?: Account;
-  processedBy: string;
+export interface BackendStatusResponse {
+  status: "ok";
+  service: string;
+  supabaseUrl: string;
   timestamp: string;
 }
 
 /**
- * Server Function: Memproses verifikasi kredensial login di sisi backend
+ * Server Function: Memeriksa kesehatan server & konfigurasi koneksi backend.
  */
-export const loginServerFn = createServerFn({ method: "POST" })
-  .validator((d: ServerLoginPayload) => d)
-  .handler(async ({ data }): Promise<ServerLoginResult> => {
-    const { email, password, role } = data;
-    const acc = SEED_ACCOUNTS.find((a) => a.email.toLowerCase() === email.trim().toLowerCase());
-
-    if (!acc || acc.password !== password) {
-      return {
-        ok: false,
-        error: "Surel atau kata sandi salah",
-        processedBy: "JobFlow Nitro Server",
-        timestamp: new Date().toISOString(),
-      };
-    }
-
-    if (acc.role !== role) {
-      return {
-        ok: false,
-        error: `Akun ini terdaftar sebagai ${acc.role === "siswa" ? "Siswa" : "Guru BK"}. Pilih peran yang sesuai.`,
-        processedBy: "JobFlow Nitro Server",
-        timestamp: new Date().toISOString(),
-      };
-    }
-
-    return {
-      ok: true,
-      account: acc,
-      processedBy: "JobFlow Nitro Server",
-      timestamp: new Date().toISOString(),
-    };
-  });
-
+export const getBackendStatusFn = createServerFn({ method: "GET" }).handler(
+  async (): Promise<BackendStatusResponse> => ({
+    status: "ok",
+    service: "JobFlow Production Server",
+    supabaseUrl: SUPABASE_URL,
+    timestamp: new Date().toISOString(),
+  }),
+);

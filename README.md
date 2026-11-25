@@ -1,128 +1,111 @@
-# JobFlow — Pengelola Lamaran Kerja Siswa & Pantau Karier
+# JobFlow — Pengelola Lamaran Kerja Siswa & Pemantauan Karier Guru BK
 
-Aplikasi manajemen dan pelacak lamaran kerja modern yang dirancang untuk membantu siswa (khususnya SMK) merapikan proses rekrutmen, memantau tenggat seleksi, serta memudahkan Guru Bimbingan Konseling (BK) memantau progres karier siswa dalam satu tempat.
-
----
-
-## 🚀 Fitur Utama
-
-- **Papan Kanban Lamaran:** Alur seleksi 6 tahap (*Applied, Screening, Interview, Offering, Diterima, Ditolak*) dengan fitur pencarian, filter status, dan drag-and-drop yang intuitif.
-- **Radar Tenggat & Jadwal:** Deteksi otomatis jadwal tes dan wawancara mendatang dengan visualisasi tenggat mendesak (< 24 jam) dan terlewat.
-- **Persiapan Wawancara:** Checklist persiapan mandiri, profil singkat perusahaan mitra, dan draf surel follow-up otomatis setelah 7 hari kerja tanpa kabar.
-- **Dasbor Analitik & Funnel Konversi:** Grafik funnel tahapan seleksi, persentase konversi wawancara hingga penawaran kerja (*offering*).
-- **Portal Guru BK:** Pemantauan kolektif progres siswa binaan, statistik penempatan sekolah, serta direktori data lamaran per siswa.
-- **Technical SEO & Social Sharing Siap Pakai:** Dilengkapi metadata OpenGraph lengkap, tag Canonical, Schema.org JSON-LD (`WebApplication` & `Organization`), `sitemap.xml`, dan `robots.txt`.
-- **Aset Gambar Teroptimasi:** Banner OpenGraph dan favicon menggunakan format modern WebP berkualitas tinggi (~85%) untuk pemuatan cepat di semua jaringan.
-- **Akun Demo Terintegrasi:** Akses instan dengan satu klik untuk peran Siswa dan Guru BK tanpa perlu konfigurasi basis data eksternal.
+Aplikasi web full-stack untuk membantu siswa SMK mencatat, mengelola, dan memantau progres lamaran kerja, sekaligus memudahkan Guru Bimbingan Konseling (BK) memantau perkembangan karier dan penempatan kerja siswa binaan secara real-time.
 
 ---
 
-## 🛠️ Teknologi yang Digunakan (Tech Stack)
+## Fitur Utama
 
-- **Framework:** [TanStack Start](https://tanstack.com/start) (Fullstack React Framework dengan SSR & Nitro engine)
-- **Routing:** [TanStack Router](https://tanstack.com/router) (Type-safe file-based routing)
-- **UI & Komponen:** [React 19](https://react.dev/), [Radix UI Primitives](https://www.radix-ui.com/), [Lucide React](https://lucide.dev/) (Icons), [Sonner](https://sonner.emilkowal.ski/) (Toast)
-- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **State Management:** In-memory client stack store (React Context)
-- **Bahasa:** [TypeScript](https://www.typescriptlang.org/)
-- **Testing:** [Vitest](https://vitest.dev/) & React Testing Library
-- **Bundler:** [Vite](https://vite.dev/) & Rolldown
+### Portal Siswa
+* **Autentikasi & Profil Persisten (Supabase Auth):** Daftar akun siswa, masuk dengan verifikasi peran, pemulihan kata sandi (*Lupa kata sandi*), sesi persisten saat halaman di-refresh, dan edit profil siswa.
+* **Papan Kanban 6 Tahap:** *Applied, Screening, Interview, Offering, Diterima, Ditolak* dengan drag-and-drop, pencarian, filter multi-kriteria, dan pencatatan riwayat status otomatis (`status_history`).
+* **Beranda & Tindakan Harian:** Pengingat follow-up otomatis (≥ 7 hari kerja) dengan draf surel siap salin, kartu persiapan wawancara (≤ 48 jam) dengan checklist persisten di database, serta **Catatan Bimbingan dari Guru BK**.
+* **Radar Tenggat & Integrasi Kalender:** Countdown real-time jadwal tes/wawancara, notifikasi browser, serta tombol **Google Calendar** dan **Unduh `.ics`**.
+* **Lampiran CV Privat (Supabase Storage):** Upload berkas PDF asli (maks. 5 MB) ke bucket privat `cvs`, pilih ulang dari pustaka CV, serta pratinjau & unduh aman via *Signed URL*.
+* **Dasbor Funnel Konversi:** Ringkasan rasio konversi dari lamaran hingga penawaran kerja (*offering*) dan diterima.
+
+### Portal Guru BK
+* **Dasbor Monitoring & Grafik:** Statistik siswa binaan real-time dengan grafik interaktif (`recharts`) dan tombol **Export Rekap CSV**.
+* **Direktori Data Siswa:** Pencarian nama/email, filter berdasarkan **Jurusan** dan **Tahap Karier Terjauh**, serta export CSV.
+* **Detail Siswa & Catatan Bimbingan:** Melihat riwayat lamaran siswa dan mengirim catatan bimbingan yang langsung tampil di beranda siswa.
+* **Progres & Statistik Penempatan:** Filter interaktif per tahapan lamaran, perbandingan penempatan per jurusan, serta export laporan penempatan sekolah (CSV).
+* **Keamanan Row Level Security (RLS):** Siswa hanya dapat mengakses data miliknya sendiri; Guru BK hanya dapat memantau siswa pada sekolah yang sama.
 
 ---
 
-## 📁 Struktur Direktori Proyek
+## Tech Stack
+
+* **Framework:** TanStack Start (React 19 + TanStack Router + Nitro SSR)
+* **Backend & Database:** Supabase (PostgreSQL + Auth + Private Storage + RLS)
+* **Styling & UI:** Tailwind CSS v4, Lucide React, Recharts, Sonner
+* **Bahasa & Testing:** TypeScript 5.8, Vitest, ESLint, Prettier
+
+---
+
+## Struktur Direktori
 
 ```text
 FlowJob/
-├── public/                 # Aset statis publik
-│   ├── favicon.ico         # Fallback favicon untuk peramban lawas
-│   ├── favicon.webp        # Favicon modern WebP terkompresi
-│   ├── og-image.webp       # Banner OpenGraph 1200x630 untuk share WhatsApp/medsos
-│   ├── robots.txt          # Direktif perayap mesin pencari & sitemap link
-│   └── sitemap.xml         # Peta situs resmi dengan domain produksi
+├── public/                        # Aset statis, favicon.webp, og-image.webp, robots.txt, sitemap.xml
 ├── src/
-│   ├── components/ui/      # Komponen antarmuka dasar (button, dialog, card, dll.)
-│   ├── hooks/              # Custom React hooks (e.g. use-mobile)
-│   ├── jobflow/            # Modul fungsional inti JobFlow
-│   │   ├── auth.tsx        # Halaman Masuk & Pendaftaran
-│   │   ├── data.ts         # Definisi tipe, seed data dummy, & helper kalkulasi
-│   │   ├── detail.tsx      # Rincian lamaran, unggah CV, & tambah jadwal
-│   │   ├── form.tsx        # Formulir tambah dan edit lamaran
-│   │   ├── guru.tsx        # Portal Guru BK (Dasbor, Siswa, Progres, Statistik)
-│   │   ├── home.tsx        # Beranda siswa & tindakan harian
-│   │   ├── insights.tsx    # Radar tenggat & dasbor funnel
-│   │   ├── kanban.tsx      # Papan Kanban drag-and-drop
-│   │   ├── store.tsx       # Penyimpanan state in-memory & navigasi layar
-│   │   └── ui.tsx          # Elemen UI umum (Header, BottomNav, Card, Modal)
+│   ├── jobflow/
+│   │   ├── api.ts                 # Layer API Supabase (Auth, CRUD, Storage, Notes)
+│   │   ├── app.tsx                # Root aplikasi & code-splitting Portal Guru BK
+│   │   ├── auth.tsx               # Halaman Masuk, Daftar, & Pemulihan Kata Sandi
+│   │   ├── auth.server.ts         # Server Function health/backend status
+│   │   ├── calendar.ts            # Generator Google Calendar, berkas .ics, & Export CSV
+│   │   ├── data.ts                # Tipe data, kalkulasi statistik, filter, & formatter
+│   │   ├── detail.tsx             # Detail lamaran, jadwal, & upload/pratinjau CV PDF asli
+│   │   ├── form.tsx               # Formulir tambah/edit lamaran & catatan perusahaan
+│   │   ├── guru.tsx               # Portal Guru BK (lazy-loaded)
+│   │   ├── home.tsx               # Beranda siswa, checklist persisten, & catatan Guru BK
+│   │   ├── insights.tsx           # Radar tenggat & dasbor funnel siswa
+│   │   ├── kanban.tsx             # Papan Kanban drag-and-drop
+│   │   ├── store.tsx              # State management tersinkron dengan Supabase & URL browser
+│   │   ├── ui.tsx                 # Komponen UI inti
+│   │   └── url.ts                 # Pemetaan URL asli (/beranda, /kanban, /lamaran/:id, /guru/*)
 │   ├── lib/
-│   │   ├── constants.ts    # Konfigurasi situs terpusat, kontak, & data SEO
-│   │   └── utils.ts        # Helper utilitas classnames (cn)
-│   ├── routes/             # File-based routing TanStack Start
-│   │   ├── __root.tsx      # Root layout, metadata head, & skrip global
-│   │   └── index.tsx       # Entry point utama aplikasi
-│   ├── test/               # Berkas pengujian otomatis (Vitest)
-│   │   ├── app-routing.test.tsx
-│   │   └── seo.test.tsx
-│   ├── router.tsx          # Inisialisasi router
-│   ├── server.ts           # Server entry point
-│   ├── start.ts            # Konfigurasi TanStack Start
-│   └── styles.css          # Konfigurasi Tailwind CSS v4 & tema
-├── package.json
-├── tsconfig.json
-└── vite.config.ts
+│   │   ├── constants.ts           # Konfigurasi situs & SEO terpusat (SITE_CONFIG)
+│   │   ├── supabase.ts            # Inisialisasi client Supabase
+│   │   └── utils.ts               # Utility classnames
+│   ├── routes/                    # File-based routing (__root.tsx, index.tsx, $.tsx)
+│   ├── test/                      # Unit & integration tests (Vitest)
+│   └── server.ts                  # Entry server Nitro + endpoint /api/health
+├── supabase-schema.sql            # Skema lengkap database + trigger + RLS + bucket storage + kode akses SMKN 53
+└── .env.example                   # Contoh variabel lingkungan
 ```
 
 ---
 
-## 💻 Memulai Pengembangan Lokal (Getting Started)
+## Cara Setup & Menjalankan Lokal
 
-### Prasyarat
-- Node.js versi `18.x` atau yang lebih baru (disarankan `20.x` LTS atau `22.x`)
-- npm, pnpm, atau bun
+### 1. Pasang Dependensi
+```bash
+npm install
+```
 
-### Instalasi & Menjalankan Aplikasi
+### 2. Konfigurasi Environment (`.env`)
+Salin `.env.example` menjadi `.env`, lalu isi kredensial Supabase proyekmu:
+```env
+VITE_SITE_URL=https://jobflow.id
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-publishable-or-anon-key
+```
 
-1. **Pasang dependensi:**
-   ```bash
-   npm install
-   ```
+### 3. Inisialisasi Database Supabase
+Buka **SQL Editor** di Supabase Dashboard, salin seluruh isi [`supabase-schema.sql`](supabase-schema.sql), lalu klik **Run**.
 
-2. **Jalankan development server:**
-   ```bash
-   npm run dev
-   ```
+Untuk menjadikan salah satu akun terdaftar sebagai **Guru BK**:
+```sql
+UPDATE public.profiles
+SET role = 'gurubk', nip = '19800512 200501 2 004'
+WHERE email = 'guru@sekolah.sch.id';
+```
 
-3. Buka peramban di `http://localhost:3000` (atau port yang ditampilkan di terminal).
+### 4. Jalankan Aplikasi
+```bash
+npm run dev
+```
 
 ---
 
-## 📜 Perintah yang Tersedia (Scripts)
+## Perintah Tersedia
 
 | Perintah | Deskripsi |
 | :--- | :--- |
-| `npm run dev` | Menjalankan server pengembangan dengan hot module replacement (HMR). |
-| `npm run build` | Melakukan kompilasi bundle produksi (Client, SSR, dan Nitro build). |
-| `npm run preview` | Menjalankan pratinjau lokal dari bundle hasil build produksi. |
-| `npm test` | Menjalankan seluruh pengujian unit & integrasi menggunakan Vitest. |
-| `npm run lint` | Menjalankan pemeriksaan kode menggunakan ESLint. |
-| `npm run format` | Memformat seluruh kode menggunakan Prettier. |
-
----
-
-## ⚙️ Konfigurasi Lingkungan (Environment Variables)
-
-Secara bawaan aplikasi sudah siap berjalan langsung. Jika ingin mengubah URL produksi untuk sitemap atau OpenGraph metadata, buat file `.env` di direktori utama:
-
-```env
-VITE_SITE_URL=https://jobflow.id
-```
-
-Konfigurasi kontak bisnis, nama situs, nomor WhatsApp, dan jam kerja dapat diubah secara terpusat pada file [`src/lib/constants.ts`](src/lib/constants.ts).
-
----
-
-## 🔑 Akun Demo untuk Pengujian
-
-Aplikasi menyediakan dua akun demo yang dapat langsung digunakan pada layar Masuk:
-- **Akun Siswa:** `rahima@email.com` / `rahima123`
-- **Akun Guru BK:** `gurubk@jobflow.id` / `gurubk123`
+| `npm run dev` | Menjalankan development server lokal |
+| `npm run build` | Build produksi (Client, SSR, dan Nitro) |
+| `npm run preview` | Pratinjau lokal hasil build produksi |
+| `npm test` | Menjalankan seluruh pengujian Vitest |
+| `npm run lint` | Pemeriksaan ESLint |
+| `npm run format` | Format kode menggunakan Prettier |

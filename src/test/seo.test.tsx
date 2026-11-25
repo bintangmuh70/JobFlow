@@ -8,7 +8,7 @@ describe("Technical SEO & Asset Configuration", () => {
     expect(SITE_CONFIG.name).toBe("JobFlow");
     expect(SITE_CONFIG.domain).toMatch(/^https:\/\//);
     expect(SITE_CONFIG.contact.whatsappClean).toBeTruthy();
-    expect(SITE_CONFIG.contact.email).toBe("halo@jobflow.id");
+    expect(SITE_CONFIG.contact.email).toBe("bkk@smkn53jkt.sch.id");
     expect(SITE_CONFIG.seo.ogImage).toBe("/og-image.webp");
   });
 

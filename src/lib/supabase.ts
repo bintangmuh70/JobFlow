@@ -1,15 +1,30 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env["VITE_SUPABASE_URL"] || "https://egkjtrbieirjmaathxub.supabase.co";
-const supabaseAnonKey = import.meta.env["VITE_SUPABASE_ANON_KEY"] || "sb_publishable_t8yCSGKR08B1QZvu2WEyIg_gYaVK7lu";
+const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env ?? {};
+
+export const SUPABASE_URL = env["VITE_SUPABASE_URL"] ?? "";
+export const SUPABASE_ANON_KEY = env["VITE_SUPABASE_ANON_KEY"] ?? "";
+
+export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
 /**
- * Supabase client instance untuk browser dan server
+ * Supabase client instance dengan session persisten di browser.
+ * Menggunakan fallback placeholder aman hanya jika env belum diset (mis. saat unit test).
  */
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(
+  SUPABASE_URL || "https://placeholder.supabase.co",
+  SUPABASE_ANON_KEY || "placeholder-anon-key",
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  },
+);
 
 /**
- * Cek status konektivitas Supabase
+ * Cek status konektivitas Supabase.
  */
 export async function testSupabaseConnection() {
   try {

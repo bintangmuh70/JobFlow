@@ -34,8 +34,9 @@ export function KanbanScreen() {
   const move = (id: string, s: Status) => {
     const a = apps.find((x) => x.id === id);
     if (!a || a.status === s) return;
-    setStatus(id, s);
-    toast.success(`Status dipindahkan ke ${STATUS_LABEL[s]}`);
+    void setStatus(id, s).then((ok) => {
+      if (ok) toast.success(`Status dipindahkan ke ${STATUS_LABEL[s]}`);
+    });
   };
 
   const begin = (a: Application, el: HTMLElement, x: number, y: number) => {
@@ -83,9 +84,21 @@ export function KanbanScreen() {
   const dragged = apps.find((a) => a.id === drag?.id);
 
   return (
-    <div className={cn("pb-28", drag && "select-none")}>
-      <Header title="Kanban" subtitle={`${apps.length} lamaran`}
-        right={<Btn size="sm" variant="soft" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90" onClick={() => go({ name: "form" })}><Plus className="h-4 w-4" /> Tambah</Btn>} />
+    <div className={cn("pb-28 lg:pb-10", drag && "select-none")}>
+      <Header
+        title="Lamaran"
+        subtitle={`${apps.length} lamaran tercatat`}
+        right={
+          <Btn
+            size="sm"
+            variant="soft"
+            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 lg:bg-primary lg:text-primary-foreground lg:hover:bg-primary/90"
+            onClick={() => go({ name: "form" })}
+          >
+            <Plus className="h-4 w-4" /> Tambah
+          </Btn>
+        }
+      />
       <div className="px-5 pt-4 md:px-8">
         <div className="rounded-2xl border border-border bg-card p-3 shadow-card">
           <div className="flex flex-col gap-2 sm:flex-row">
@@ -213,7 +226,7 @@ export function KanbanScreen() {
                   );
                 })}
                 {list.length === 0 && (
-                  <div className="grid h-[120px] place-items-center rounded-xl border-2 border-dashed border-input text-sm font-medium text-muted-foreground">{activeCount > 0 ? "Tidak ada yang cocok" : "Belum ada lamaran"}</div>
+                  <div className="grid h-[120px] place-items-center rounded-xl border-2 border-dashed border-input px-3 text-center text-sm font-medium text-muted-foreground">{activeCount > 0 ? "Tidak ada yang cocok" : "Belum ada lamaran"}</div>
                 )}
               </div>
             </section>

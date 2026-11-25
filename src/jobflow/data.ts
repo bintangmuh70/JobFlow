@@ -10,17 +10,28 @@ export interface Schedule {
   remind: Remind;
 }
 export interface Cv {
+  id?: string | undefined;
   name: string;
   size: number;
+  storagePath?: string | undefined;
+}
+export interface GuidanceNote {
+  id: string;
+  studentId: string;
+  guruId: string;
+  guruName: string;
+  note: string;
+  createdAt: Date;
 }
 export interface Account {
   id: string;
   role: Role;
   name: string;
   email: string;
-  password: string;
+  password?: string | undefined;
   school: string;
   major?: string | undefined; // jurusan (siswa)
+  studentStatus?: string | undefined; // Kelas XII / Alumni (siswa)
   nip?: string | undefined; // Guru BK
   phone?: string | undefined;
 }
@@ -40,6 +51,7 @@ export interface Application {
   schedules: Schedule[];
   cv?: Cv | undefined;
   followedUp?: boolean | undefined;
+  companyNotes?: string | undefined;
 }
 
 export const STATUSES: Status[] = ["applied", "screening", "interview", "offer", "accepted", "rejected"];

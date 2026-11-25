@@ -44,43 +44,56 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+function withSecurityHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("X-Frame-Options", "DENY");
+  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const url = new URL(request.url);
       if (url.pathname === "/api/health") {
-        return new Response(
-          JSON.stringify({
-            status: "healthy",
-            service: "JobFlow Backend API Engine",
-            serverTime: new Date().toISOString(),
-            uptime: `${Math.floor(typeof process !== "undefined" && process.uptime ? process.uptime() : 0)}s`,
-            environment: (typeof process !== "undefined" && process.env && process.env["NODE_ENV"]) || "development",
-            database: {
-              provider: "Supabase (PostgreSQL)",
-              url: "https://egkjtrbieirjmaathxub.supabase.co",
-              status: "connected",
+        return withSecurityHeaders(
+          new Response(
+            JSON.stringify({
+              status: "healthy",
+              service: "JobFlow Backend API Engine",
+              serverTime: new Date().toISOString(),
+              environment: (typeof process !== "undefined" && process.env && process.env["NODE_ENV"]) || "production",
+            }),
+            {
+              status: 200,
+              headers: {
+                "content-type": "application/json; charset=utf-8",
+                "cache-control": "no-store",
+              },
             },
-          }),
-          {
-            status: 200,
-            headers: {
-              "content-type": "application/json; charset=utf-8",
-              "access-control-allow-origin": "*",
-            },
-          },
+          ),
         );
       }
 
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      const normalized = await normalizeCatastrophicSsrResponse(response);
+      return withSecurityHeaders(normalized);
     } catch (error) {
       console.error(error);
-      return new Response(renderErrorPage(), {
-        status: 500,
-        headers: { "content-type": "text/html; charset=utf-8" },
-      });
+      return withSecurityHeaders(
+        new Response(renderErrorPage(), {
+          status: 500,
+          headers: { "content-type": "text/html; charset=utf-8" },
+        }),
+      );
     }
   },
 };
